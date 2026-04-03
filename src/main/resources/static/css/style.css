@@ -470,6 +470,7 @@ textarea {
   font-weight:700;
   font-size:.85rem;
   line-height:1;
+  width: fit-content;  
 }
 
 .note-badge.high   { background:#dc3545; color:#fff; }
