@@ -18,30 +18,12 @@
         </div>
 
         <div class="note-form-card">
-			<form th:action="${memo.id != null} ? @{|/memo/update/${memo.id}|} : @{/memo/create}" th:object="${memo}" method="post">
+            <form th:action="${memo.id} != null ? @{|/memo/update/${memo.id}|} : @{/memo/create}" th:object="${memo}" method="post">        
                 <div class="form-group">
                     <label>タイトル：</label>
                     <input type="text" th:field="*{title}">
                     <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></div>
                 </div>
-				
-				<div class="form-group">
-					 <label>優先度</label>
-					  <label class="priority-pill high">
-					     <input type="radio" th:field="*{priority}" value="HIGH" class="priority-radio">
-					     高
-					   </label>
-
-					   <label class="priority-pill medium">
-					     <input type="radio" th:field="*{priority}" value="MIDDLE" class="priority-radio">
-					     中
-					   </label>
-
-					   <label class="priority-pill low">
-					     <input type="radio" th:field="*{priority}" value="LOW" class="priority-radio">
-					     低
-					   </label>
-				</div>								  		 
 
                 <div class="form-group">
                     <label>内容：</label>
