@@ -1,5 +1,7 @@
 package com.lesson.memo.model;
 
+//test
+
 public enum Priority {
 	HIGH("高"),
 	MIDDLE("中"),
