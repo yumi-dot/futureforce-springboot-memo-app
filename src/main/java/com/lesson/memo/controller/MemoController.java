@@ -33,8 +33,25 @@ public class MemoController {
     @GetMapping
     public String list(Model model) {
         List<Memo> memos = memoRepository.findAll();
+        memos.sort((a, b) -> {
+            return getOrder(a.getPriority()) - getOrder(b.getPriority());
+        });
         model.addAttribute("memos", memos);
         return "memo-list";
+    }
+    
+    //修正追加以下
+    private int getOrder(Priority priority) {
+        switch (priority) {
+            case HIGH:
+                return 1;
+            case MIDDLE:
+                return 2;
+            case LOW:
+                return 3;
+            default:
+                return 4;
+        }
     }
 
     @GetMapping("/new")
