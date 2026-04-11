@@ -17,6 +17,14 @@
                 <i class="ri-add-circle-line"></i> 新規メモ
             </a>
         </div>
+		
+		<form method="get" action="/memo" style="margin-bottom: 20px;">
+		    <input type="text" name="keyword"
+		           placeholder="キーワード検索"
+		           th:value="${keyword}">
+		    <button type="submit">検索</button>
+		</form>
+
 
         <div class="notes-grid">
             <div class="note-card" th:each="memo : ${memos}">
@@ -38,7 +46,7 @@
             </div>
         </div>
 
-        <div th:if="${memos.isEmpty()}" class="empty-state">
+        <div th:if="${#lists.isEmpty(memos)}" class="empty-state">
             <p>メモがありません</p>
             <a th:href="@{/memo/new}" class="btn btn-primary">新しいメモを作成</a>
         </div>
