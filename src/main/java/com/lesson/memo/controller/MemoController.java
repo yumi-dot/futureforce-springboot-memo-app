@@ -103,9 +103,9 @@ public class MemoController {
         return "redirect:/memo";
     }
     
-    @GetMapping
-    public String list(@RequestParam(required = false) String keyword,
-                       Model model) {
+    @GetMapping("/search")
+    public String search(@RequestParam(required = false) String keyword,
+                         Model model) {
 
         List<Memo> memos;
 
