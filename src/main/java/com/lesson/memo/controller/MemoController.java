@@ -1,8 +1,12 @@
 package com.lesson.memo.controller;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lesson.memo.model.Memo;
+import com.lesson.memo.model.Priority;
 import com.lesson.memo.repository.MemoRepository;
 
 @Controller
@@ -29,26 +34,47 @@ public class MemoController {
     @GetMapping
     public String list(Model model) {
         List<Memo> memos = memoRepository.findAll();
+        memos.sort((a, b) -> {
+            return getOrder(a.getPriority()) - getOrder(b.getPriority());
+        });
         model.addAttribute("memos", memos);
         return "memo-list";
+    }
+    
+    //修正追加以下
+    private int getOrder(Priority priority) {
+        switch (priority) {
+            case HIGH:
+                return 1;
+            case MIDDLE:
+                return 2;
+            case LOW:
+                return 3;
+            default:
+                return 4;
+        }
     }
 
     @GetMapping("/new")
     public String showForm(Model model) {
         model.addAttribute("memo", new Memo());
+        model.addAttribute("priorities",Priority.values());
         return "memo-form";
     }
 
     @PostMapping("/create")
     public String create(@ModelAttribute @Valid Memo memo,
-            BindingResult result) {
+                        BindingResult result, 
+                        Model model) {
+        
         if (result.hasErrors()) {
+            model.addAttribute("priorities", Priority.values());
             return "memo-form";
         }
-
         memo.setCreatedAt(LocalDateTime.now());
         memo.setUpdatedAt(LocalDateTime.now());
         memoRepository.save(memo);
+        
         return "redirect:/memo";
     }
 
@@ -92,6 +118,7 @@ public class MemoController {
         memoToUpdate.setTitle(memo.getTitle());
         memoToUpdate.setContent(memo.getContent());
         memoToUpdate.setUpdatedAt(LocalDateTime.now());
+        memoToUpdate.setPriority(memo.getPriority());
         memoRepository.save(memoToUpdate);
 
         return "redirect:/memo/detail/" + id;
