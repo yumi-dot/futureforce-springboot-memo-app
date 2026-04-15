@@ -136,9 +136,14 @@ public class MemoController {
         if (keyword == null || keyword.isBlank()) {
             memos = memoRepository.findAll();
         } else {
-            memos = memoRepository
-                    .findByTitleContainingOrContentContaining(keyword, keyword);
+            memos = memoRepository.findByTitleContainingOrContentContaining(keyword, keyword);
         }
+            memos.sort((a, b) -> {
+            	if(a.getPriority() != b.getPriority()) {
+            		return a.getPriority().ordinal() - b.getPriority().ordinal();
+            	}
+            	return b.getUpdatedAt().compareTo(a.getUpdatedAt());
+            });
 
         model.addAttribute("memos", memos);
         model.addAttribute("keyword", keyword);
