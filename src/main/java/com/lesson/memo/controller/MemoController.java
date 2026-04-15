@@ -140,7 +140,7 @@ public class MemoController {
         }
             memos.sort((a, b) -> {
             	if(a.getPriority() != b.getPriority()) {
-            		return a.getPriority().ordinal() - b.getPriority().ordinal();
+            		return getOrder(a.getPriority()) - getOrder(b.getPriority());
             	}
             	return b.getUpdatedAt().compareTo(a.getUpdatedAt());
             });
