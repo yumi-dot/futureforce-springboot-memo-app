@@ -3,9 +3,7 @@ package com.lesson.memo.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lesson.memo.model.Memo;
 import com.lesson.memo.model.Priority;
@@ -78,54 +76,40 @@ public class MemoController {
     }
 
     @GetMapping("/detail/{id}")
-    public String showDetail(@PathVariable Long id, Model model,
-            HttpServletResponse response) {
-        Optional<Memo> memo = memoRepository.findById(id);
-        if (memo.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    public String showDetail(@PathVariable Long id, Model model) {
+        Memo memo = memoRepository.findById(id).orElse(null);
+        
+        if (memo == null) {
             return "not-found"; // エラー画面にリダイレクト
         }
 
-        model.addAttribute("memo", memo.get());
+        model.addAttribute("memo", memo);
         return "memo-detail";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model, HttpServletResponse response) {
-        if (model.containsAttribute("memo")) {
-            return "memo-form";
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Memo memo = memoRepository.findById(id).orElse(null);
+        if (memo == null) {
+            return "not-found";
         }
-
-        return memoRepository.findById(id)
-                .map(memo -> {
-                    model.addAttribute("memo", memo);
-                    return "memo-form";
-                })
-                .orElseGet(() -> {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    return "not-found";
-                });
+        model.addAttribute("memo", memo);
+        return "memo-form";
     }
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id,
             @ModelAttribute @Valid Memo memo,
-            BindingResult result,
-            HttpServletResponse response,
-            RedirectAttributes redirectAttributes) {
+            BindingResult result) {
 
-        Optional<Memo> opt = memoRepository.findById(id);
-        if (opt.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return "not-found"; // エラー画面表示
+    	if (result.hasErrors()) {
+            return "memo-form";
         }
 
-        Memo memoToUpdate = opt.get();
+        Memo memoToUpdate = memoRepository.findById(id).orElse(null);
 
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.memo", result);
-            redirectAttributes.addFlashAttribute("memo", memo);
-            return "redirect:/memo/edit/" + id; // editにリダイレクト
+        if (memoToUpdate == null) {
+            return "not-found";
         }
 
         memoToUpdate.setTitle(memo.getTitle());
@@ -138,15 +122,32 @@ public class MemoController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id,
-        HttpServletResponse response) {
-        if (memoRepository.existsById(id)) {
-            memoRepository.deleteById(id);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return "not-found";
-        }
-
+    public String delete(@PathVariable Long id) {
+        memoRepository.deleteById(id);
         return "redirect:/memo";
+    }
+    
+    @GetMapping("/search")
+    public String search(@RequestParam(required = false) String keyword,
+                         Model model) {
+
+        List<Memo> memos;
+
+        if (keyword == null || keyword.isBlank()) {
+            memos = memoRepository.findAll();
+        } else {
+            memos = memoRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+        }
+            memos.sort((a, b) -> {
+            	if(a.getPriority() != b.getPriority()) {
+            		return getOrder(a.getPriority()) - getOrder(b.getPriority());
+            	}
+            	return b.getUpdatedAt().compareTo(a.getUpdatedAt());
+            });
+
+        model.addAttribute("memos", memos);
+        model.addAttribute("keyword", keyword);
+
+        return "memo-list";
     }
 }
