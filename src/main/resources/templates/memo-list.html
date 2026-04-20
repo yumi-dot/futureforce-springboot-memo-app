@@ -13,15 +13,16 @@
     <div class="container">
 		<div class="header">
 		    <h1 class="app-title">メモ一覧</h1>
+
 		    <a th:href="@{/memo/new}" class="btn btn-primary">
 		        <i class="ri-add-circle-line"></i> 新規メモ
 		    </a>
-		</div>
 
-		<form th:action="@{/logout}" method="post">
-		    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-		    <button type="submit">ログアウト</button>
-		</form>
+		    <form th:action="@{/logout}" method="post" style="display:inline;">
+		        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		        <button type="submit" class="btn btn-danger">ログアウト</button>
+		    </form>
+		</div>
 		
 		<form method="get" action="/memo/search">
 		    <input type="text" name="keyword" th:value="${keyword}">
