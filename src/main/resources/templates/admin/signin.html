@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン</title>
+</head>
+<body>
+
+<h2>ログイン</h2>
+
+<form action="/login" method="post">
+    
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <div>
+        メール：<input type="text" name="email">
+    </div>
+
+    <div>
+        パスワード：<input type="password" name="password">
+    </div>
+
+    <button type="submit">ログイン</button>
+</form>
+
+<br>
+
+<a href="/admin/signup">新規登録はこちら</a>
+
+</body>
+</html>
