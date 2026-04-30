@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理者登録</title>
+</head>
+<body>
+
+<h2>管理者登録</h2>
+
+<form action="/admin/signup" method="post">
+	<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	
+    <div>
+        姓：<input type="text" name="lastName">
+    </div>
+    <div>
+        名：<input type="text" name="firstName">
+    </div>
+    <div>
+        メール：<input type="email" name="email">
+    </div>
+    <div>
+        パスワード：<input type="password" name="password">
+    </div>
+    <button type="submit">登録</button>
+</form>
+
+<a href="/admin/signin">ログインはこちらから</a>
+
+</body>
+</html>

@@ -10,4 +10,5 @@ public class MemoApplication {
 		SpringApplication.run(MemoApplication.class, args);
 	}
 
+
 }
