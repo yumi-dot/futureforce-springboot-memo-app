@@ -13,7 +13,7 @@ import com.lesson.memo.repository.AdminRepository;
 
 @Controller
 public class AdminController {
-	
+
 	@Autowired
 	private AdminRepository adminRepository;
 
@@ -24,19 +24,20 @@ public class AdminController {
     public String signup(Admin admin) {
     	admin.setCreatedAt(LocalDateTime.now());
     	admin.setUpdatedAt(LocalDateTime.now());
-    	
+
     	String encodedPassword = passwordEncoder.encode(admin.getPassword());
+    	admin.setPassword(encodedPassword);
 
         adminRepository.save(admin);
 
         return "redirect:/admin/signin";
     }
-    
+
     @GetMapping("/admin/signup")
     public String showSignupForm() {
         return "admin/signup";
     }
-    
+
     @GetMapping("/admin/signin")
     public String showSigninForm() {
         return "admin/signin";
